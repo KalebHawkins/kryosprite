@@ -62,7 +62,7 @@ type Sprite struct {
 	// Texture is the sprite's image.
 	Texture *ebiten.Image
 	// Position is the sprites location on screen.
-	Position *Vector
+	Position Vector
 	// Animator can be used to add animations to your sprite.
 	Animator Animator
 	// UpdateFunc handles your sprites update logic. This function should be

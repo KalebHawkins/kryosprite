@@ -32,6 +32,8 @@ import (
 
 See the wiki for a walkthrough on how to build a simple game from scratch using Ebitengine and Kryosprite.
 
+The fox sprite sheet was made by [Elthen's Pixel Art Shop](https://elthen.itch.io/).
+
 ## TODO
 
 - [ ] Make Wiki...

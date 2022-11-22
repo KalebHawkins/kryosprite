@@ -45,7 +45,7 @@ func NewGame() *Game {
 		background: ebiten.NewImage(scrWidth, scrHeight),
 		plyr: &ks.Sprite{
 			Texture:  ebiten.NewImage(32, 32),
-			Position: &ks.Vector{X: scrWidth / 2, Y: scrHeight / 2},
+			Position: ks.Vector{X: scrWidth / 2, Y: scrHeight / 2},
 			Animator: nil,
 			Origin:   ks.Center,
 			Color:    color.White,
