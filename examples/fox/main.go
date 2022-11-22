@@ -10,7 +10,6 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
-	"time"
 
 	ks "github.com/KalebHawkins/kryosprite"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -29,9 +28,8 @@ const (
 type Game struct {
 	background *ebiten.Image
 	plyr       *ks.Sprite
-	prevFrame  time.Time
-	notMovedIn time.Duration
-	jumpedTime time.Time
+	notMovedIn float64
+	jumpedTick float64
 	jumping    bool
 }
 
@@ -44,7 +42,7 @@ func (g *Game) Draw(scr *ebiten.Image) {
 	g.background.Fill(color.Black)
 	g.plyr.Draw(g.background)
 
-	HUD := fmt.Sprintf("Move Up: W\nMove Left: A\nMove Down: S\nMove Right: D\nJump: Space\nIdle Animation Change in: %.2f", 5.0-g.notMovedIn.Seconds())
+	HUD := fmt.Sprintf("Move Up: W\nMove Left: A\nMove Down: S\nMove Right: D\nJump: Space\nIdle Animation Change in: %.2fs\n", (300/ebiten.ActualTPS())-(g.notMovedIn/ebiten.ActualTPS()))
 	ebitenutil.DebugPrint(g.background, HUD)
 	ebitenutil.DrawLine(g.background, 0, scrHeight/2, scrWidth, scrHeight/2, color.White)
 	ebitenutil.DrawLine(g.background, scrWidth/2, 0, scrWidth/2, scrHeight, color.White)
@@ -77,25 +75,25 @@ func NewGame() *Game {
 	g.plyr.Animator.Add("idle", &ks.Animation{
 		StartFrame: ks.Frame{X: 0, Y: 0, Width: 32, Height: 32},
 		FrameCount: 5,
-		Delay:      150 * time.Millisecond,
+		Delay:      7,
 		Direction:  ks.Horizontal,
 	})
 	g.plyr.Animator.Add("idleLook", &ks.Animation{
 		StartFrame: ks.Frame{X: 0, Y: 32, Width: 32, Height: 32},
 		FrameCount: 14,
-		Delay:      150 * time.Millisecond,
+		Delay:      7,
 		Direction:  ks.Horizontal,
 	})
 	g.plyr.Animator.Add("trot", &ks.Animation{
 		StartFrame: ks.Frame{X: 0, Y: 64, Width: 32, Height: 32},
 		FrameCount: 8,
-		Delay:      150 * time.Millisecond,
+		Delay:      7,
 		Direction:  ks.Horizontal,
 	})
 	g.plyr.Animator.Add("jump", &ks.Animation{
 		StartFrame: ks.Frame{X: 0, Y: 96, Width: 32, Height: 32},
 		FrameCount: 11,
-		Delay:      100 * time.Millisecond,
+		Delay:      5,
 		Direction:  ks.Horizontal,
 	})
 
@@ -115,15 +113,14 @@ func plyrUpdate(g *Game) func() error {
 	return func() error {
 		g.plyr.Animator.Play("idle")
 
-		g.notMovedIn += time.Since(g.prevFrame)
-		g.prevFrame = time.Now()
+		g.notMovedIn += 1
 
-		// Play a different Idle animation is the player hasn't moved in 5 seconds.
-		if g.notMovedIn > 5*time.Second {
+		// Play a different Idle animation is the player hasn't moved in 300 ticks.
+		if g.notMovedIn > 300 {
 			g.plyr.Animator.Play("idleLook")
 
 			// After the animation reset the animation's frames.
-			if g.notMovedIn > 5*time.Second+g.plyr.Animator.AnimationTime() {
+			if g.notMovedIn > 300+g.plyr.Animator.AnimationTicks() {
 				g.plyr.Animator.Reset()
 				g.notMovedIn = 0
 			}
@@ -153,14 +150,17 @@ func plyrUpdate(g *Game) func() error {
 			g.notMovedIn = 0
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			g.notMovedIn = 0
 			g.jumping = true
-			g.jumpedTime = time.Now()
+			g.notMovedIn = 0
+			g.jumpedTick = 0
 		}
 
 		if g.jumping {
 			g.plyr.Animator.Play("jump")
-			if time.Since(g.jumpedTime) > g.plyr.Animator.AnimationTime() {
+			g.jumpedTick++
+
+			if g.jumpedTick > g.plyr.Animator.AnimationTicks() {
+				g.plyr.Animator.Reset()
 				g.jumping = false
 			}
 		}

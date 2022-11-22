@@ -16,7 +16,6 @@ package kryosprite
 
 import (
 	"errors"
-	"time"
 )
 
 // ErrAnimationExists is an error returned if an Animation already exists in the animator instance.
@@ -62,8 +61,8 @@ type Animator interface {
 	// Paused returns true if the animator's current animation is paused, otherwise it returns false.
 	Paused() bool
 
-	// AnimationTime returns a time.Duration representing the total time it takes to perform a full animation sequence.
-	AnimationTime() time.Duration
+	// AnimationTicks returns the number of ticks it takes to perform a full animation sequence.
+	AnimationTicks() float64
 }
 
 // NewAnimator returns a new Animator interface.
@@ -128,7 +127,7 @@ func (a *animator) Reset() {
 	a.currentAnimation.currentFrameIndex = 0
 }
 
-// AnimationTime returns a time.Duration representing the total time it takes to perform a full animation sequence.
-func (a *animator) AnimationTime() time.Duration {
-	return time.Duration(a.currentAnimation.FrameCount * int(a.currentAnimation.Delay))
+// AnimationTicks returns number of ticks it takes to perform a full animation sequence.
+func (a *animator) AnimationTicks() float64 {
+	return float64(a.currentAnimation.FrameCount) * a.currentAnimation.Delay
 }

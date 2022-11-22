@@ -16,7 +16,6 @@ package kryosprite
 
 import (
 	"image"
-	"time"
 )
 
 // Direction repestents the Direction in which the animation is read from a spritesheet.
@@ -35,8 +34,8 @@ type Animation struct {
 	StartFrame Frame
 	// FrameCount the number of frames for a particular animation.
 	FrameCount int
-	// Delay is the time it takes for each frame of the animation to pass.
-	Delay time.Duration
+	// Delay is the number of ticks it takes for each frame of the animation to pass.
+	Delay float64
 	// Direction is the Direction the spritesheet should be read.
 	// This should be either Horizontal or Vertical.
 	Direction Direction
@@ -47,10 +46,8 @@ type Animation struct {
 	currentFrameIndex int
 	// paused is a boolean representing the pause state of the animation.
 	paused bool
-	// prevFrame repesents the time between the frame iterations.
-	prevFrame time.Time
-	// deltaTime repesents the time delta between frames.
-	deltaTime float64
+	// frameTimer represents the number of ticks passed since the last frame started displaying.
+	frameTimer float64
 }
 
 // update iterates through each frame of a sprite sheet.
@@ -59,8 +56,7 @@ func (a *Animation) update() {
 		return
 	}
 
-	a.deltaTime += float64(time.Since(a.prevFrame))
-	a.prevFrame = time.Now()
+	a.frameTimer += 1
 
 	switch a.Direction {
 	case Horizontal:
@@ -75,8 +71,8 @@ func (a *Animation) update() {
 		a.currentFrame.Height = a.currentFrame.Y + a.StartFrame.Height
 	}
 
-	if a.deltaTime >= float64(a.Delay) {
-		a.deltaTime = 0
+	if a.frameTimer >= a.Delay {
+		a.frameTimer = 0
 
 		a.currentFrameIndex++
 		if a.currentFrameIndex >= a.FrameCount {
