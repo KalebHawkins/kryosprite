@@ -7,11 +7,11 @@ A sprite library for Ebitengine. Kryosprite helps ease handling your sprite's te
 I highly recommend checking out the [example](./examples/) code for a full demonstration.
 
 ```bash
-go run github.com/KalebHawkins/kryosprite/basic@latest
+go run -tags=example github.com/KalebHawkins/kryosprite/examples/basic@latest
 ```
 
 ```bash
-go run github.com/KalebHawkins/kryosprite/fox@latest
+go run -tags=example github.com/KalebHawkins/kryosprite/examples/fox@latest
 ```
 
 ## Using the Library
