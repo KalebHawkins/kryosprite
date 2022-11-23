@@ -51,12 +51,6 @@ const (
 	Center
 )
 
-// Vector represents a mathematical vector
-// used for positioning and movement.
-type Vector struct {
-	X, Y float64
-}
-
 // Sprite represents any visible image on the game screen.
 type Sprite struct {
 	// Texture is the sprite's image.
@@ -126,9 +120,9 @@ func (s *Sprite) SetScale(x, y float64) {
 	s.Scale.Y = y
 }
 
-// FlipHorizontal will flip a sprite horizontally if flipped is set to true.
-func (s *Sprite) FlipHorizontal(flipped bool) {
-	if flipped {
+// FlipHorizontal will flip a sprite horizontally.
+func (s *Sprite) FlipHorizontal(flip bool) {
+	if flip {
 		if !s.flippedHorizontal {
 			s.Scale.X = -s.Scale.X
 		}
@@ -140,8 +134,8 @@ func (s *Sprite) FlipHorizontal(flipped bool) {
 }
 
 // FlipVertical will flip a sprite vertically if flipped is set to true.
-func (s *Sprite) FlipVertical(flipped bool) {
-	if flipped {
+func (s *Sprite) FlipVertical(flip bool) {
+	if flip {
 		if !s.flippedVertical {
 			s.Scale.Y = -s.Scale.Y
 		}
